@@ -1,0 +1,13 @@
+month,orders_count,order_status
+2024-07,63,completed
+2024-07,15,pending
+2024-07,15,cancelled
+2024-06,9,pending
+2024-06,87,completed
+2024-06,19,cancelled
+2024-05,14,cancelled
+2024-05,99,completed
+2024-05,18,pending
+2024-04,18,pending
+2024-04,17,cancelled
+2024-04,77,completed

@@ -1,5 +1,6 @@
 import os
 import logging
+import pandas as pd
 from sqlalchemy import create_engine, text
 
 def save_to_db(customers, products, orders, items):
@@ -20,6 +21,15 @@ def save_to_db(customers, products, orders, items):
         products.to_sql('products', engine, if_exists='replace', index=False)
         orders.to_sql('orders', engine, if_exists='replace', index=False)
         items.to_sql('order_items', engine, if_exists='replace', index=False)
+
+        analytics_tables = [
+            "analytics_category_revenue",
+            "analytics_customer_value",
+            "analytics_sales_by_country",
+            "analytics_top_products",
+            "analytics_monthly_trends",
+            "analytics_order_metrics"
+        ]
 
         with engine.begin() as conn:
             conn.execute(text("DROP TABLE IF EXISTS analytics_category_revenue"))
@@ -78,6 +88,13 @@ def save_to_db(customers, products, orders, items):
                 JOIN products p ON i.product_id = p.product_id
                 GROUP BY 1;
             """))
+
+        logging.info("Експорт аналітичних звітів у CSV...")
+        for table in analytics_tables:
+            df_analytics = pd.read_sql(f"SELECT * FROM {table}", engine)
+            csv_path = os.path.join(output_dir, f"{table}.csv")
+            df_analytics.to_csv(csv_path, index=False)
+            logging.info(f"Звіт збережено: {csv_path}")
 
         logging.info("Всі аналітичні вітрини успішно оновлені.")
         print(f" База даних готова! Створено 6 аналітичних таблиць у {db_path}")
